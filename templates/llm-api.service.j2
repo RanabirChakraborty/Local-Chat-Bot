@@ -1,0 +1,12 @@
+[Unit]
+Description=LLM API Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 {{ llm_api_dir }}/llm_api.py
+Restart=always
+User=root
+WorkingDirectory={{ llm_api_dir }}
+
+[Install]
+WantedBy=multi-user.target

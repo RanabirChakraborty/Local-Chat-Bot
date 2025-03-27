@@ -1,0 +1,45 @@
+---
+- name: "Installation and configuration of LLM"
+  hosts: "{{ hosts_group_name | default('all') }}"
+  vars:
+    llm_api_port: 8000
+    llm_api_dir: "/opt/llm"
+  tasks:
+    - name: Ensure LLM API directory exists
+      ansible.builtin.file:
+        path: "{{ llm_api_dir }}"
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: "Install Python dependencies using explicit Python 3.11 command"
+      ansible.builtin.command:
+        cmd: "/usr/bin/python3.11 -m pip install transformers fastapi uvicorn tensorflow tf-keras"
+      become: true
+      changed_when: false
+
+    - name: "Deploy LLM API script"
+      ansible.builtin.template:
+        src: "llm_api.py.j2"
+        dest: "{{ llm_api_dir }}/llm_api.py"
+        mode: '0755'
+      become: true
+
+    - name: "Deploy LLM API systemd service"
+      ansible.builtin.template:
+        src: "llm-api.service.j2"
+        dest: "/etc/systemd/system/llm-api.service"
+        mode: '0644'
+      become: true
+
+    - name: Reload systemd to recognize new LLM API service
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      become: true
+
+    - name: "Start and enable LLM API service"
+      ansible.builtin.systemd:
+        name: llm-api
+        enabled: yes
+        state: started
+      become: true
