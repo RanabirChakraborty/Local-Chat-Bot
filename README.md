@@ -18,6 +18,4 @@ curl -X POST "http://localhost:8000/generate" \
      -H "Content-Type: application/json" \
      -d '{"prompt": "What is AI?"}'
 ```
-
-![Description](images/response.png)
-
+![Response](https://github.com/RanabirChakraborty/Local-Chat-Bot/blob/main/images/reponse.png)
